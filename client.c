@@ -1,8 +1,10 @@
 #include <sys/socket.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define BUFLEN 1024
 int main()
@@ -25,18 +27,14 @@ int main()
     return 0;
   }
 
-  char buf[BUFLEN];
-  while (1)
+  char buf[1024]={0};
+  
+  printf("等待发送:%s\n", buf);
+  time_t start = time(0);
+  for (int i = 0; i < 2; ++i)
   {
-    memset(buf, 0, BUFLEN);
-    // fread(buf, 1, BUFLEN, stdin);
-    printf("请输入:\n");
-    // fgets(buf, 1024, stdin);
-    scanf("%s",buf);
-    if (strncmp(buf, "q", 1) == 0)
-    {
-      break;
-    }
+    memset(buf , 0 , strlen(buf));
+    sprintf(buf, "Hello world_%ld", time(0));
     int n = send(fd, buf, strlen(buf), 0);
     if (n == -1)
     {
@@ -46,6 +44,9 @@ int main()
     printf("[发送] len=%d data=%s\n", n, buf);
     memset(buf, 0, BUFLEN);
     recv(fd, buf, BUFLEN, 0);
-    printf("[收到] len=%ld ,data=%s\n",strlen(buf), buf);
+    printf("[收到] len=%ld data=%s\n", strlen(buf), buf);
   }
+  close(fd);
+  time_t end = time(0);
+  printf("duration:%ld\n",end-start);
 }

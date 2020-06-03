@@ -34,3 +34,6 @@
     }
   }
   ```
+  ---
+  需要注意的坑:
+  - 如果client关闭了socket,那么server会收到长度为0的msg,即会调用callback_recvdata,这个时候需要在函数里面对长度为0进行判断,并取消注册,关闭fd
